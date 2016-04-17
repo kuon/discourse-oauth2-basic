@@ -70,8 +70,14 @@ class OAuth2BasicAuthenticator < ::Auth::OAuth2Authenticator
 
     result.name = user_details[:name]
     result.username = user_details[:username]
-    result.email = user_details[:email]
-    result.email_valid = result.email.present? && SiteSetting.oauth2_email_verified?
+
+    if !SiteSetting.oauth2_force_email_domain.empty?
+      result.email = "#{UserNameSuggester.suggest(result.username)}@#{SiteSetting.oauth2_force_email_domain}"
+      result.email_valid = true
+    else
+      result.email = user_details[:email]
+      result.email_valid = result.email.present? && SiteSetting.oauth2_email_verified?
+    end
 
     current_info = ::PluginStore.get("oauth2_basic", "oauth2_basic_user_#{user_details[:user_id]}")
     if current_info
@@ -80,11 +86,21 @@ class OAuth2BasicAuthenticator < ::Auth::OAuth2Authenticator
       result.user = User.where(email: Email.downcase(result.email)).first
     end
 
-    result.extra_data = { oauth2_basic_user_id: user_details[:user_id] }
+    result.extra_data = {
+      oauth2_basic_user_id: user_details[:user_id],
+      oauth2_basic_username: user_details[:username]
+    }
     result
   end
 
   def after_create_account(user, auth)
+    if SiteSetting.oauth2_override_username
+      username = auth[:extra_data][:oauth2_basic_username]
+      user.name = username
+      user.username = UserNameSuggester.suggest(username)
+      user.save
+    end
+    ::PluginStore.set("oauth2_basic", "oauth2_basic_user_oauth_#{user.id}", {oauth_id: auth[:extra_data][:oauth2_basic_user_id] })
     ::PluginStore.set("oauth2_basic", "oauth2_basic_user_#{auth[:extra_data][:oauth2_basic_user_id]}", {user_id: user.id })
   end
 end

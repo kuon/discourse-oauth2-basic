@@ -13,6 +13,8 @@ login:
   oauth2_json_email_path: ''
   oauth2_email_verified: false
   oauth2_send_auth_header: true
+  oauth2_force_email_domain: ''
+  oauth2_override_username: false
   oauth2_button_title:
     default: 'with OAuth2'
     client: true
