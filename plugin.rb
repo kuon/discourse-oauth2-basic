@@ -97,11 +97,12 @@ class OAuth2BasicAuthenticator < ::Auth::OAuth2Authenticator
     if SiteSetting.oauth2_override_username
       username = auth[:extra_data][:oauth2_basic_username]
       user.name = username
+      user.title = username
       user.username = UserNameSuggester.sanitize_username(username)
       user.save
     end
-    ::PluginStore.set("oauth2_basic", "oauth2_basic_user_oauth_#{user.id}", {oauth_id: auth[:extra_data][:oauth2_basic_user_id] })
-    ::PluginStore.set("oauth2_basic", "oauth2_basic_user_#{auth[:extra_data][:oauth2_basic_user_id]}", {user_id: user.id })
+    ::PluginStore.set("oauth2_basic", "oauth2_basic_user_oauth_#{user.id}", {oauth_id: oid })
+    ::PluginStore.set("oauth2_basic", "oauth2_basic_user_#{oid}", {user_id: user.id })
   end
 end
 
@@ -110,7 +111,7 @@ auth_provider title_setting: "oauth2_button_title",
               authenticator: OAuth2BasicAuthenticator.new('oauth2_basic'),
               message: "OAuth2",
               frame_width: 550,
-              frame_height: 600 
+              frame_height: 600
 
 register_css <<CSS
 
