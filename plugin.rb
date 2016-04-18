@@ -72,7 +72,7 @@ class OAuth2BasicAuthenticator < ::Auth::OAuth2Authenticator
     result.username = user_details[:username]
 
     if !SiteSetting.oauth2_force_email_domain.empty?
-      result.email = "#{UserNameSuggester.suggest(result.username)}@#{SiteSetting.oauth2_force_email_domain}"
+      result.email = "#{UserNameSuggester.sanitize_username(result.username)}@#{SiteSetting.oauth2_force_email_domain}"
       result.email_valid = true
     else
       result.email = user_details[:email]
@@ -97,7 +97,7 @@ class OAuth2BasicAuthenticator < ::Auth::OAuth2Authenticator
     if SiteSetting.oauth2_override_username
       username = auth[:extra_data][:oauth2_basic_username]
       user.name = username
-      user.username = UserNameSuggester.suggest(username)
+      user.username = UserNameSuggester.sanitize_username(username)
       user.save
     end
     ::PluginStore.set("oauth2_basic", "oauth2_basic_user_oauth_#{user.id}", {oauth_id: auth[:extra_data][:oauth2_basic_user_id] })
