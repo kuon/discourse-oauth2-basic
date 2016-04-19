@@ -14,4 +14,4 @@ en:
     oauth2_send_auth_header: "Send the token as an HTTP Authorization header"
     oauth2_force_email_domain: "Force an email domain for new users"
     oauth2_override_username: "Override username with oauth username"
-    oauth2_store_username_in_title: "Put username in title"
+    oauth2_store_username_in_title: "Put username in title, override username must be active for this to work"

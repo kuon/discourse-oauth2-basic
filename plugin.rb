@@ -94,10 +94,13 @@ class OAuth2BasicAuthenticator < ::Auth::OAuth2Authenticator
   end
 
   def after_create_account(user, auth)
+    oid = auth[:extra_data][:oauth2_basic_user_id]
     if SiteSetting.oauth2_override_username
       username = auth[:extra_data][:oauth2_basic_username]
       user.name = username
-      user.title = username
+      if SiteSetting.oauth2_store_username_in_title
+        user.title = username
+      end
       user.username = UserNameSuggester.sanitize_username(username)
       user.save
     end
