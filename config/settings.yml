@@ -19,3 +19,4 @@ login:
   oauth2_button_title:
     default: 'with OAuth2'
     client: true
+  oauth2_avatar_url_template: ''

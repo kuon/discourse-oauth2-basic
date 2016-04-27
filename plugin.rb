@@ -104,6 +104,16 @@ class OAuth2BasicAuthenticator < ::Auth::OAuth2Authenticator
       user.username = UserNameSuggester.sanitize_username(username)
       user.save
     end
+    unless SiteSetting.oauth2_avatar_url_template.empty?
+      info = {
+        username: user.username,
+        name: user.name,
+        oauth_id: oid,
+        user_id: user.id
+      }
+      url = SiteSetting.oauth2_avatar_url_template % info
+      UserAvatar.import_url_for_user(url, user)
+    end
     ::PluginStore.set("oauth2_basic", "oauth2_basic_user_oauth_#{user.id}", {oauth_id: oid })
     ::PluginStore.set("oauth2_basic", "oauth2_basic_user_#{oid}", {user_id: user.id })
   end
