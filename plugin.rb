@@ -93,7 +93,12 @@ class OAuth2BasicAuthenticator < ::Auth::OAuth2Authenticator
     result
   end
 
+  def log(info)
+    Rails.logger.warn("OAuth2 Debugging: #{info}") if SiteSetting.oauth2_debug_auth
+  end
+
   def after_create_account(user, auth)
+    log("After create account for #{user.name}")
     oid = auth[:extra_data][:oauth2_basic_user_id]
     if SiteSetting.oauth2_override_username
       username = auth[:extra_data][:oauth2_basic_username]
@@ -105,15 +110,18 @@ class OAuth2BasicAuthenticator < ::Auth::OAuth2Authenticator
       user.save
     end
     unless SiteSetting.oauth2_avatar_url_template.empty?
+      log("Importing avatar for user #{user.name}")
       info = {
         username: user.username,
         name: user.name,
         oauth_id: oid,
         user_id: user.id
       }
+      log("Info: #{info}")
       url = SiteSetting.oauth2_avatar_url_template % info
       UserAvatar.import_url_for_user(url, user)
     end
+    log("Setting plugin rows for user #{user.name}")
     ::PluginStore.set("oauth2_basic", "oauth2_basic_user_oauth_#{user.id}", {oauth_id: oid })
     ::PluginStore.set("oauth2_basic", "oauth2_basic_user_#{oid}", {user_id: user.id })
   end

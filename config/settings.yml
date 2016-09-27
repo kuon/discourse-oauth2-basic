@@ -16,6 +16,7 @@ login:
   oauth2_force_email_domain: ''
   oauth2_override_username: false
   oauth2_store_username_in_title: false
+  oauth2_debug_auth: false
   oauth2_button_title:
     default: 'with OAuth2'
     client: true

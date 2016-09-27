@@ -14,5 +14,6 @@ en:
     oauth2_send_auth_header: "Send the token as an HTTP Authorization header"
     oauth2_force_email_domain: "Force an email domain for new users"
     oauth2_override_username: "Override username with oauth username"
+    oauth2_debug_auth: "Enable debug messages"
     oauth2_store_username_in_title: "Put username in title, override username must be active for this to work"
     oauth2_avatar_url_template: "A template url for avatar to import, for example 'http://avatar.com/%{username}.png'. Available fields are username, name, user_id, oauth_id."
